@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Tour from "../models/tour";
+import Booking from "../models/booking";
 
 export const addTour = async (req: Request, res: Response) => {
   const tour = req.body;
@@ -26,10 +27,16 @@ export const getTours = async (req: Request, res: Response) => {
 
 export const deleteTour = async (req: Request, res: Response) => {
   const { id } = req.params;
-
   try {
-    await Tour.findByIdAndRemove(id);
-
+    const deletedTour = await Tour.findByIdAndRemove(id);
+    if (deletedTour?.userEmail) {
+      await Booking.deleteMany({
+        $and: [
+          { tourId: deletedTour.id },
+          { userEmail: deletedTour?.userEmail },
+        ],
+      });
+    }
     res.json({ message: "Tour deleted successfully!" });
   } catch (error: any) {
     res.status(404).json({ message: error.message });

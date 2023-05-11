@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteTour = exports.getTours = exports.addTour = void 0;
 const tour_1 = __importDefault(require("../models/tour"));
+const booking_1 = __importDefault(require("../models/booking"));
 const addTour = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const tour = req.body;
     const newTour = new tour_1.default(tour);
@@ -39,7 +40,15 @@ exports.getTours = getTours;
 const deleteTour = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        yield tour_1.default.findByIdAndRemove(id);
+        const deletedTour = yield tour_1.default.findByIdAndRemove(id);
+        if (deletedTour === null || deletedTour === void 0 ? void 0 : deletedTour.userEmail) {
+            yield booking_1.default.deleteMany({
+                $and: [
+                    { tourId: deletedTour.id },
+                    { userEmail: deletedTour === null || deletedTour === void 0 ? void 0 : deletedTour.userEmail },
+                ],
+            });
+        }
         res.json({ message: "Tour deleted successfully!" });
     }
     catch (error) {

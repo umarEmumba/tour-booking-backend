@@ -33,14 +33,32 @@ const tourSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-    startDate: {
+    checkin: {
         type: String,
-        required: true,
+        required: false,
     },
-    endDate: {
+    checkout: {
         type: String,
-        required: true,
+        required: false,
     },
+    localizedCityName: {
+        type: String,
+        required: false,
+    },
+    listingName: {
+        type: String,
+        required: false,
+    },
+    listingGuestLabel: {
+        type: String,
+        required: false,
+    },
+    listingPreviewAmenityNames: [
+        {
+            type: String,
+            required: false,
+        },
+    ],
     facilities: [{ type: String, required: false }],
     images: [{ type: String, required: false }],
 });
